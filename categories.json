@@ -1,0 +1,16 @@
+[
+  { "id": "1", "title": "Action", "path": "action.json", "count": 14 },
+  { "id": "4", "title": "Aventure", "path": "aventure.json", "count": 4 },
+  { "id": "6", "title": "Comédie", "path": "comedie.json", "count": 21 },
+  { "id": "7", "title": "Drame", "path": "drame.json", "count": 31 },
+  { "id": "8", "title": "Fantastique", "path": "fantastique.json", "count": 5 },
+  { "id": "9", "title": "Horreur", "path": "horreur.json", "count": 10 },
+  { "id": "10", "title": "Policier", "path": "policier.json", "count": 1 },
+  {
+    "id": "11",
+    "title": "Science Fiction",
+    "path": "sciencefiction.json",
+    "count": 8
+  },
+  { "id": "12", "title": "Thriller", "path": "thriller.json", "count": 14 }
+]

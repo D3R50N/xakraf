@@ -1,0 +1,22 @@
+{
+  "name": "xakraf_scrap",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js",
+    "find": "node find.js"
+  },
+  "bin": {
+    "xakraf": "./find.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.2",
+    "copy-paste": "^1.5.3",
+    "jsdom": "^24.1.0"
+  }
+}
