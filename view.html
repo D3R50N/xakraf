@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie</title>
+    <!-- <link href="https://vjs.zencdn.net/7.2.3/video-js.css" rel="stylesheet"> -->
+   
+
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #16161D;
+            box-sizing: border-box;
+        }
+
+
+        #container {
+            position: absolute;
+            text-align: center;
+        }
+
+        .buttonshow_on {
+            margin: 6px;
+            background: #868686;
+            padding: 13px;
+            border-radius: 2px;
+            position: relative;
+            text-align: center;
+            float: right;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            display: flex;
+            align-items: center;
+            color: white;
+            border: 1px solid #4d3f4e;
+            font-size: 17px;
+            margin-right: -1px;
+        }
+
+        .buttonshow_on:hover {
+            background: #645565;
+        }
+
+        .acronymlogo {
+            padding-top: 4px;
+            margin-right: 12px;
+        }
+
+        #myElement {
+            min-height: 375px;
+        }
+
+        .video {
+            margin: 8px;
+            border: 1px solid #858585;
+
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+
+        }
+    </style>
+
+</head>
+
+<body>
+    <script type="text/javascript" src="https://cdn.jwplayer.com/libraries/3yfBcL8f.js"></script>
+    <div id="myElement"></div>
+    <script type="text/javascript">
+        jwplayer("myElement").setup({
+            aspectratio: "16:9",
+            autostart: true,
+            file: " https://cld42387.cldmax.com/files/aa/nD3zkMUXDWvLGmMpCLLnYHZhpDMDVr8j4bS.m3u8"
+        })
+    </script>
+
+
+
+</body>
+
+</html>

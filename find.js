@@ -14,7 +14,24 @@ const movies = [];
 function has(val, term) {
   return val.toLowerCase().includes(term.toLowerCase());
 }
+function printMovie(movie = new Movie()) {
+  console.log("-------------------------");
+  const printObj = {
+    "TITLE :": movie.title,
+    "CATEGORY :": movie.category,
+    "DESCRIPTION :": movie.description,
+    "FILE :": movie.file.trim() === "" ? "🚫 NO FILE FOUND" : movie.file,
+  };
+  for (let key in printObj) {
+    console.log(key, printObj[key]);
+  }
+  console.log("-------------------------");
 
+  if (movie.file.trim() === "") {
+    return false;
+  }
+  return true;
+}
 Movie.prototype.includes = function (searchTerm) {
   for (let key in this) {
     if (key === "includes") continue;
@@ -28,10 +45,11 @@ Movie.prototype.includes = function (searchTerm) {
 const find = (searchTerms) => {
   return movies.filter((movie) => {
     for (let term of searchTerms) {
-      if (movie.includes(term)) {
-        return true;
+      if (!movie.includes(term)) {
+        return false;
       }
     }
+    return true;
   });
 };
 
@@ -49,12 +67,17 @@ console.log(
   movies.length,
   "movies" + (foundMovies.length > 0 ? ":" : ".")
 );
-console.log(
-  foundMovies
-    .map((movie) => "- " + movie.id + "\t" + movie.title + " | " + movie.file)
-    .join("\n")
-);
+
 if (foundMovies.length == 1) {
-    clipboard.copy(foundMovies[0].file);
-    console.log("\nCopied '",foundMovies[0].title,"' file to clipboard");
+  const movie = foundMovies[0];
+  if (!printMovie(movie)) return;
+
+  clipboard.copy(movie.file);
+  console.log("\nCopied file URL to clipboard ✅\n");
+} else if (foundMovies.length > 1) {
+  foundMovies.forEach((movie, index) => {
+    console.log("-------------------------");
+    console.log(index + 1);
+    printMovie(movie);
+  });
 }
