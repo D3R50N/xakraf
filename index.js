@@ -10,7 +10,7 @@ const categories = categoriesJson.map((category) => {
   return new Category(category);
 });
 
-const baseUrl = "https://xakraf.com";
+const baseUrl = "https://okrami.com";
 
 function appLog(...message) {
   console.clear();
@@ -27,7 +27,7 @@ async function getDom(url) {
 
 async function scrapMoviesOnCategory(category = new Category()) {
   const pagesCount = category.count;
-  const listPath = "/rmznt0k9a/c/xakraf/" + category.id + "/";
+  const listPath = "/9jhao4f5udo/c/okrami/" + category.id + "/";
   var movies = [];
 
   var pageUrl = (page = 0) => baseUrl + listPath + `${page}`;
@@ -192,10 +192,27 @@ async function scrapMoviesOnCategory(category = new Category()) {
   await scrap();
 }
 
-async function main() {
-  for (let category of categories) {
+async function main(choosen) {
+  for (let category of choosen) {
     await scrapMoviesOnCategory(category);
   }
 }
 
-main();
+const inquirer = require('inquirer');
+inquirer.default.prompt([
+  {
+    name:"categories",
+    message:"Quelles catégories ?",
+    type: "checkbox",
+    choices: categories.map(c => c.title),
+    default: categories.map(c => c.title),
+    required: true,
+    loop:false,
+  }
+]).then(v => {
+  const c = v.categories;
+  const choosen = categories.filter(cat => c.includes(cat.title))
+  main(choosen)
+})
+
+// main();
