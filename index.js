@@ -10,7 +10,7 @@ const categories = categoriesJson.map((category) => {
   return new Category(category);
 });
 
-const baseUrl = "https://okrami.com";
+const baseUrl = "https://sodirm.com";
 
 function appLog(...message) {
   console.clear();
@@ -27,7 +27,7 @@ async function getDom(url) {
 
 async function scrapMoviesOnCategory(category = new Category()) {
   const pagesCount = category.count;
-  const listPath = "/9jhao4f5udo/c/okrami/" + category.id + "/";
+  const listPath = "/jh5ulr9d5r7ak8/b/sodirm/" + category.id + "/";
   var movies = [];
 
   var pageUrl = (page = 0) => baseUrl + listPath + `${page}`;
