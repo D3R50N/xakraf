@@ -28,7 +28,7 @@ async function getDom(url) {
 async function scrapMoviesOnCategory(category = new Category()) {
   const pagesCount = category.count;
   const listPath = "/jh5ulr9d5r7ak8/b/sodirm/" + category.id + "/";
-  var movies = [];
+  var movies = require(`./db/${category.path}`).map(m => new Movie(m)) ?? [];
 
   var pageUrl = (page = 0) => baseUrl + listPath + `${page}`;
 
@@ -40,15 +40,16 @@ async function scrapMoviesOnCategory(category = new Category()) {
       var title = link.textContent.replaceAll("\n", "").trim();
       var url = link.getAttribute("href");
       var id = "mov_" + url.split("/")[url.split("/").length - 1];
-      movies.push(
-        new Movie({
-          id,
-          title,
-          url,
-          categoryId: category.id,
-          category: category.title,
-        })
-      );
+      if (movies.filter(m => m.id == id).length == 0)
+        movies.push(
+          new Movie({
+            id,
+            title,
+            url,
+            categoryId: category.id,
+            category: category.title,
+          })
+        );
     });
 
     // appLog("Page " + (page + 1) + " : " + links.length + " movies");
@@ -201,13 +202,13 @@ async function main(choosen) {
 const inquirer = require('inquirer');
 inquirer.default.prompt([
   {
-    name:"categories",
-    message:"Quelles catégories ?",
+    name: "categories",
+    message: "Quelles catégories ?",
     type: "checkbox",
     choices: categories.map(c => c.title),
     default: categories.map(c => c.title),
     required: true,
-    loop:false,
+    loop: false,
   }
 ]).then(v => {
   const c = v.categories;
