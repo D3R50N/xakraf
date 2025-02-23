@@ -25,6 +25,33 @@ async function getDom(url) {
   return document;
 }
 
+async function getInfos(movie = new Movie()) {
+  try {
+    var document = await getDom(baseUrl + movie.url);
+    var img = document.querySelector(
+      "body > div.content > div.row > div.column1 > p:nth-child(5) > img"
+    );
+    var desc = document.querySelector(
+      "body > div.content > div.row > div.column1 > p:nth-child(7)"
+    );
+    var iframe = document.querySelector(
+      "body > div.content > div.row > div.column1 > p:nth-child(9) > iframe"
+    );
+    if (img) {
+      movie.image = img.getAttribute("src");
+    }
+    if (desc) {
+      movie.description = desc.textContent.replaceAll("\n", "").trim();
+    }
+    if (iframe) {
+      movie.iframeSrc = iframe.getAttribute("src");
+    }
+  } catch (error) {
+      console.log("Error getting image for " + movie.title, ":", error.message);
+  }
+}
+
+
 async function scrapMoviesOnCategory(category = new Category()) {
   const pagesCount = category.count;
   const listPath = "/jh5ulr9d5r7ak8/b/sodirm/" + category.id + "/";
@@ -51,10 +78,6 @@ async function scrapMoviesOnCategory(category = new Category()) {
           })
         );
     });
-
-    // appLog("Page " + (page + 1) + " : " + links.length + " movies");
-
-    return movies;
   }
   function saveMovies() {
     fs.writeFileSync(path.join("db", category.path), JSON.stringify(movies));
@@ -79,6 +102,7 @@ async function scrapMoviesOnCategory(category = new Category()) {
             pagesCount
           );
           pagesScrapped++;
+          console.log("Pages got",pagesScrapped,"on",pagesCount);
           if (pagesScrapped == pagesCount) {
             resolve();
           }
@@ -87,32 +111,7 @@ async function scrapMoviesOnCategory(category = new Category()) {
     });
   }
 
-  async function getInfos(movie = new Movie()) {
-    try {
-      var document = await getDom(baseUrl + movie.url);
-      var img = document.querySelector(
-        "body > div.content > div.row > div.column1 > p:nth-child(5) > img"
-      );
-      var desc = document.querySelector(
-        "body > div.content > div.row > div.column1 > p:nth-child(7)"
-      );
-      var iframe = document.querySelector(
-        "body > div.content > div.row > div.column1 > p:nth-child(9) > iframe"
-      );
-      if (img) {
-        movie.image = img.getAttribute("src");
-      }
-      if (desc) {
-        movie.description = desc.textContent.replaceAll("\n", "").trim();
-      }
-      if (iframe) {
-        movie.iframeSrc = iframe.getAttribute("src");
-      }
-    } catch (error) {
-      //   console.log("Error getting image for " + movie.title, ":", error.message);
-    }
-  }
-
+ 
   async function getAllInfos() {
     return new Promise((resolve, reject) => {
       var moviesScrapped = 0;
