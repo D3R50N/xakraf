@@ -25,39 +25,26 @@ async function getDom(url) {
   return document;
 }
 
-async function getInfos(movie = new Movie()) {
-  try {
-    var document = await getDom(baseUrl + movie.url);
-    var img = document.querySelector(
-      "body > div.content > div.row > div.column1 > p:nth-child(5) > img"
-    );
-    var desc = document.querySelector(
-      "body > div.content > div.row > div.column1 > p:nth-child(7)"
-    );
-    var iframe = document.querySelector(
-      "body > div.content > div.row > div.column1 > p:nth-child(9) > iframe"
-    );
-    if (img) {
-      movie.image = img.getAttribute("src");
-    }
-    if (desc) {
-      movie.description = desc.textContent.replaceAll("\n", "").trim();
-    }
-    if (iframe) {
-      movie.iframeSrc = iframe.getAttribute("src");
-    }
-  } catch (error) {
-      console.log("Error getting image for " + movie.title, ":", error.message);
-  }
-}
 
 
 async function scrapMoviesOnCategory(category = new Category()) {
   const pagesCount = category.count;
-  const listPath = "/jh5ulr9d5r7ak8/b/sodirm/" + category.id + "/";
-  var movies = require(`./db/${category.path}`).map(m => new Movie(m)) ?? [];
+  const listPath = "/jh5ulr9d5r7ak8/c/sodirm/" + category.id + "/";
+  const oldmovies = require(`./db/${category.path}`).map(m => new Movie(m)) ?? [];
+  const movies = [];
+  console.log(category.path, oldmovies.length);
 
   var pageUrl = (page = 0) => baseUrl + listPath + `${page}`;
+
+  function saveMovies() {
+    fs.writeFileSync(path.join("db", category.path), JSON.stringify([...movies, ...oldmovies]));
+    appLog(
+      `[${category.title}] ` + "Category",
+      category.title,
+      "movies saved to",
+      path.join("db", category.path)
+    );
+  }
 
   async function getMovies(page = 0) {
     var document = await getDom(pageUrl(page));
@@ -67,7 +54,7 @@ async function scrapMoviesOnCategory(category = new Category()) {
       var title = link.textContent.replaceAll("\n", "").trim();
       var url = link.getAttribute("href");
       var id = "mov_" + url.split("/")[url.split("/").length - 1];
-      if (movies.filter(m => m.id == id).length == 0)
+      if (oldmovies.filter(m => m.id == id).length == 0 && movies.filter(m => m.id == id).length == 0)
         movies.push(
           new Movie({
             id,
@@ -79,30 +66,22 @@ async function scrapMoviesOnCategory(category = new Category()) {
         );
     });
   }
-  function saveMovies() {
-    fs.writeFileSync(path.join("db", category.path), JSON.stringify(movies));
-    appLog(
-      `[${category.title}] ` + "Category",
-      category.title,
-      "movies saved to",
-      path.join("db", category.path)
-    );
-  }
+
 
   async function getAllMovies() {
     return new Promise((resolve, reject) => {
       var pagesScrapped = 0;
       for (let i = 0; i < pagesCount; i++) {
-        getMovies(i).then((movies) => {
+        getMovies(i).then(() => {
+
+          pagesScrapped++;
           appLog(
-            `[${category.title}] Getting movies list`,
+            `[${category.title}] Got movies list`,
             "Page",
-            i + 1,
+            pagesScrapped,
             "of",
             pagesCount
           );
-          pagesScrapped++;
-          console.log("Pages got",pagesScrapped,"on",pagesCount);
           if (pagesScrapped == pagesCount) {
             resolve();
           }
@@ -111,10 +90,37 @@ async function scrapMoviesOnCategory(category = new Category()) {
     });
   }
 
- 
+  async function getInfos(movie = new Movie()) {
+    try {
+      var document = await getDom(baseUrl + movie.url);
+      var img = document.querySelector(
+        "body > div.content > div.row > div.column1 > p:nth-child(5) > img"
+      );
+      var desc = document.querySelector(
+        "body > div.content > div.row > div.column1 > p:nth-child(7)"
+      );
+      var iframe = document.querySelector(
+        "body > div.content > div.row > div.column1 > p:nth-child(9) > iframe"
+      );
+      if (img) {
+        movie.image = img.getAttribute("src");
+      }
+      if (desc) {
+        movie.description = desc.textContent.replaceAll("\n", "").trim();
+      }
+      if (iframe) {
+        movie.iframeSrc = iframe.getAttribute("src");
+      }
+    } catch (error) {
+      console.log("Error getting image for " + movie.title, ":", error.message);
+    }
+  }
+
+
   async function getAllInfos() {
     return new Promise((resolve, reject) => {
       var moviesScrapped = 0;
+      if (movies.length == 0) resolve();
       movies.forEach((movie) => {
         getInfos(movie).then(() => {
           appLog(
@@ -158,6 +164,7 @@ async function scrapMoviesOnCategory(category = new Category()) {
   async function getAllFiles() {
     return new Promise((resolve, reject) => {
       var moviesScrapped = 0;
+      if (movies.length == 0) resolve();
       movies.forEach((movie) => {
         getFile(movie).then(() => {
           moviesScrapped++;
