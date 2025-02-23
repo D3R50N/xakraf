@@ -30,14 +30,17 @@ async function getDom(url) {
 async function scrapMoviesOnCategory(category = new Category()) {
   const pagesCount = category.count;
   const listPath = "/jh5ulr9d5r7ak8/c/sodirm/" + category.id + "/";
-  const oldmovies = require(`./db/${category.path}`).map(m => new Movie(m)) ?? [];
-  const movies = [];
+  let oldmovies = [];
+  try {
+    oldmovies = require(`./db/${category.path}`).map(m => new Movie(m));
+  } catch (_) { };
+  let movies = [];
   console.log(category.path, oldmovies.length);
 
   var pageUrl = (page = 0) => baseUrl + listPath + `${page}`;
 
   function saveMovies() {
-    fs.writeFileSync(path.join("db", category.path), JSON.stringify([...movies, ...oldmovies]));
+    fs.writeFileSync(path.join("db", category.path), JSON.stringify([...movies, ...oldmovies],null,2));
     appLog(
       `[${category.title}] ` + "Category",
       category.title,

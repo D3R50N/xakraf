@@ -54,7 +54,10 @@ const find = (searchTerms) => {
 };
 
 categories.forEach((category) => {
-  const categoryMovies = require(`./db/${category.path}`);
+  let categoryMovies = [];
+  try {
+    categoryMovies = require(`./db/${category.path}`);
+  } catch (_) { };
   movies.push(...categoryMovies.map((movie) => new Movie(movie)));
 });
 
